@@ -11,18 +11,30 @@ const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 })
 
-const main = async () =>{
-     const responseStream = await ai.models.generateContentStream({
-        model: "gemini-3.8-flash",
-        contents: " What is JS?"
-     })
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
-     for await (const chunk of responseStream){
-        console.log(chunk.text)
-     }
-}
+// const main = async () =>{
+//      const responseStream = await ai.models.generateContentStream({
+//         model: "gemini-3.8-flash",
+//         contents: " What is JS?"
+//      })
 
-main()
+//      for await (const chunk of responseStream){
+//         console.log(chunk.text)
+//      }
+// }
+
+// main()
+
+app.post("/chat", async(req,res)=> {
+    const {prompt} = req.body
+    const result = await ai.models.generateContent({
+         model: "gemini-2.5-flash",
+         contents: prompt
+    })
+    return res.json(result.text)
+})
 
 app.listen(port, ()=> {
     console.log(`server started at port ${port}`)
